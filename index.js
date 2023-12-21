@@ -28,6 +28,7 @@ async function run() {
 
     // access db and tasks collection
     const myTasks = client.db("priority-tasks").collection("tasks");
+    const myUsers = client.db("priority-tasks").collections("users");
 
     // read all tasks
     app.get("/api/v1/userTasks/:email", async (req, res) => {
@@ -49,7 +50,7 @@ async function run() {
       const projection = { _id: 0, profession: 1 };
       const result = await myTasks.find().project(projection).toArray();
       const roles = result.map(role => role.profession);
-
+      
       res.send({ count, roles })
     });
 
@@ -61,6 +62,13 @@ async function run() {
       // send back the result
       res.send(result);
     });
+
+    // add  a user DB_PASS
+    app.post("/api/v1/add-user", async(req, res) => {
+      const user = req.body;
+      const result = await myUsers.insertOne(user);
+      res.send(result);
+    })
 
     // update the task
     app.patch("/api/v1/update-task/:id", async (req, res) => {
