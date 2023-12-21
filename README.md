@@ -8,7 +8,7 @@
 POST
 
 /api/v1/update-task/:id
-PUT
+PATCH
 
 /api/v1/delete-task/:id
 DELETE

@@ -1,7 +1,7 @@
 // dependencies
 const express = require('express');
 const cors = require('cors');
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 // variables
 require('dotenv').config();
 const app = express();
@@ -46,6 +46,27 @@ async function run() {
       // insert into collection
       const result = await myTasks.insertOne(task);
       // send back the result
+      res.send(result);
+    })
+
+    // update the task
+    app.patch("/api/v1/update-task/:id", async(req, res) => {
+      const id = req.params.id;
+      const task = req.body;
+
+      const filter = { _id: new ObjectId(id)};
+
+      const updatedTask = {
+        $set: {
+          title: task.title,
+          description: task.description,
+          deadline: task.deadline,
+          priority: task.priority
+        }
+      }
+
+      const result = await myTasks.updateOne(filter, updatedTask);
+
       res.send(result);
     })
     
