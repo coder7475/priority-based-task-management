@@ -44,11 +44,11 @@ async function run() {
     // find which professionals are using it
     app.get("/api/v1/users", async (req, res) => {
       // Execute the distinct operation
-      const count = await myTasks.estimatedDocumentCount();
+      const count = await myUsers.estimatedDocumentCount();
       // res.send(result);
       // specify "borough" as the field to return values for
       const projection = { _id: 0, profession: 1 };
-      const result = await myTasks.find().project(projection).toArray();
+      const result = await myUsers.find().project(projection).toArray();
       const roles = result.map(role => role.profession);
       
       res.send({ count, roles })
