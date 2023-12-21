@@ -28,7 +28,7 @@ async function run() {
 
     // access db and tasks collection
     const myTasks = client.db("priority-tasks").collection("tasks");
-    const myUsers = client.db("priority-tasks").collections("users");
+    const myUsers = client.db("priority-tasks").collection("users");
 
     // read all tasks
     app.get("/api/v1/userTasks/:email", async (req, res) => {
@@ -66,6 +66,7 @@ async function run() {
     // add  a user DB_PASS
     app.post("/api/v1/add-user", async(req, res) => {
       const user = req.body;
+      console.log(user);
       const result = await myUsers.insertOne(user);
       res.send(result);
     })
