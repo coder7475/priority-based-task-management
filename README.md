@@ -13,5 +13,5 @@ PUT
 /api/v1/delete-task/:id
 DELETE
 
-/api/v1/read-list/:email
+/api/v1/userTasks/:email
 GET

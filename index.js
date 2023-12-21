@@ -28,6 +28,17 @@ async function run() {
     
     // access db and tasks collection
     const myTasks = client.db("priority-tasks").collection("tasks");
+
+    // read all tasks
+    app.get("/api/v1/userTasks/:email", async(req, res) => {
+      const email = req.params.email;
+      // create query
+      const query = { email };
+      // console.log(query);
+      const tasks = await myTasks.find(query).toArray();
+
+      res.send(tasks);
+    })
     
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
