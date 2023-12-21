@@ -15,3 +15,5 @@ DELETE
 
 /api/v1/userTasks/:email
 GET
+
+/api/v1/users

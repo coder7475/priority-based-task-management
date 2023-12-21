@@ -1,11 +1,11 @@
 // dependencies
-const express = require('express');
-const cors = require('cors');
-const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
+const express = require("express");
+const cors = require("cors");
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 // variables
-require('dotenv').config();
+require("dotenv").config();
 const app = express();
-const port = process.env.PORT || 5000;
+const port = process.env.PORT || 5333;
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.xjslrno.mongodb.net/?retryWrites=true&w=majority`;
 
 // middleware
@@ -18,19 +18,19 @@ const client = new MongoClient(uri, {
     version: ServerApiVersion.v1,
     strict: true,
     deprecationErrors: true,
-  }
+  },
 });
 
 async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
-    
+
     // access db and tasks collection
     const myTasks = client.db("priority-tasks").collection("tasks");
 
     // read all tasks
-    app.get("/api/v1/userTasks/:email", async(req, res) => {
+    app.get("/api/v1/userTasks/:email", async (req, res) => {
       const email = req.params.email;
       // create query
       const query = { email };
@@ -38,51 +38,66 @@ async function run() {
       const tasks = await myTasks.find(query).toArray();
 
       res.send(tasks);
-    })
+    });
+
+    // find which professionals are using it
+    app.get("/api/v1/users", async (req, res) => {
+      // Execute the distinct operation
+      const count = await myTasks.estimatedDocumentCount();
+      // res.send(result);
+      // specify "borough" as the field to return values for
+      const projection = { _id: 0, profession: 1 };
+      const result = await myTasks.find().project(projection).toArray();
+      const roles = result.map(role => role.profession);
+
+      res.send({ count, roles })
+    });
 
     // add a user task
-    app.post("/api/v1/add-task", async(req, res) => {
+    app.post("/api/v1/add-task", async (req, res) => {
       const task = req.body;
       // insert into collection
       const result = await myTasks.insertOne(task);
       // send back the result
       res.send(result);
-    })
+    });
 
     // update the task
-    app.patch("/api/v1/update-task/:id", async(req, res) => {
+    app.patch("/api/v1/update-task/:id", async (req, res) => {
       const id = req.params.id;
       const task = req.body;
 
-      const filter = { _id: new ObjectId(id)};
+      const filter = { _id: new ObjectId(id) };
 
       const updatedTask = {
         $set: {
           title: task.title,
           description: task.description,
           deadline: task.deadline,
-          priority: task.priority
-        }
-      }
+          priority: task.priority,
+        },
+      };
 
       const result = await myTasks.updateOne(filter, updatedTask);
 
       res.send(result);
-    })
+    });
 
     // delete a task
-    app.delete("/api/v1/delete-task/:id", async(req, res) => {
+    app.delete("/api/v1/delete-task/:id", async (req, res) => {
       const id = req.params.id;
-      const filter = { _id: new ObjectId(id)};
-      
+      const filter = { _id: new ObjectId(id) };
+
       const result = await myTasks.deleteOne(filter);
 
       res.send(result);
-    })
-    
+    });
+
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
-    console.log("Pinged your deployment. You successfully connected to MongoDB!");
+    console.log(
+      "Pinged your deployment. You successfully connected to MongoDB!"
+    );
   } finally {
     // Ensures that the client will close when you finish/error
     // await client.close();
@@ -92,9 +107,9 @@ run().catch(console.dir);
 
 // methods
 app.get("/", (req, res) => {
-  res.send("Task Managment Server IS RUNNING!!!")
-})
+  res.send("Task Managment Server IS RUNNING!!!");
+});
 
 app.listen(port, () => {
   console.log(`Listening to port ${port}`);
-})
+});
