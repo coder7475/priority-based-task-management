@@ -42,8 +42,9 @@ async function run() {
     });
 
     // an api to get specific task details
-    app.get("/api/v1/userTasks/:id", async (req, res) => {
-      const email = req.params.id;
+    app.get("/api/v1/findTask/:id", async (req, res) => {
+      const id = req.params.id;
+      console.log(id);
       // create query
       const query = { _id: new ObjectId(id) };
       // console.log(query);
