@@ -41,6 +41,17 @@ async function run() {
       res.send(tasks);
     });
 
+    // an api to get specific task details
+    app.get("/api/v1/userTasks/:id", async (req, res) => {
+      const email = req.params.id;
+      // create query
+      const query = { _id: new ObjectId(id) };
+      // console.log(query);
+      const task = await myTasks.find(query).toArray();
+
+      res.send(task);
+    });
+
     // find which professionals are using it
     app.get("/api/v1/users", async (req, res) => {
       // Execute the distinct operation
@@ -66,7 +77,7 @@ async function run() {
     // add  a user DB_PASS
     app.post("/api/v1/add-user", async(req, res) => {
       const user = req.body;
-      console.log(user);
+      // console.log(user);
       const result = await myUsers.insertOne(user);
       res.send(result);
     })
